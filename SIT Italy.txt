@@ -1,0 +1,78 @@
+Sub SIT_Italy()
+
+Dim MyInvoice As Long
+Dim MyPc As String
+Dim r, v, y, s, q, i, k  As Integer
+Dim Ws As Worksheet
+Dim lastrow As Long
+Dim Myref As String
+
+
+Set Ws = Sheets("Stock in Transit")
+Range("C5:C185").ClearContents
+Range("C5:C185").Interior.Pattern = xlNone
+Range("F5:F185").ClearContents
+Range("F5:F185").Interior.Pattern = xlNone
+Range("I5:I185").ClearContents
+Range("I5:I185").Interior.Pattern = xlNone
+Range("L5:L185").ClearContents
+Range("L5:L185").Interior.Pattern = xlNone
+
+r = 3
+
+k = Excel.Application.WorksheetFunction.CountIf(Range("C3:O3"), ">1")
+
+For yow = 1 To k
+    
+    Ws.Activate
+    MyPc = Cells(3, r).Value
+    
+    v = 0
+    t = 0
+    s = 0
+    q = 0
+    
+    Sheets(MyPc).Select
+    Range("A1").Activate
+    
+    lastrow = Range("A" & Rows.Count).End(xlUp).Row
+i = 1
+
+    For i = 1 To lastrow
+    
+Range("P" & i).Activate
+
+            If IsEmpty(ActiveCell.Offset(0, 1)) Then
+                
+            ElseIf ActiveCell.Offset(0, 1) = "SIT" Then
+                Myref = ActiveCell
+                Ws.Cells(5 + v, r).Value = Myref
+                v = v + 1
+            ElseIf ActiveCell.Offset(0, 1) = "ADJ no GR" Then
+                Myref = ActiveCell
+                Ws.Cells(55 + t, r).Value = Myref
+                t = t + 1
+            ElseIf ActiveCell.Offset(0, 1) = "ADJ GR DONE" Then
+                Myref = ActiveCell
+                Ws.Cells(83 + s, r).Value = Myref
+                s = s + 1
+             ElseIf ActiveCell.Offset(0, 1) = "CN" Then
+                Myref = ActiveCell
+                Ws.Cells(115 + q, r).Value = Myref
+                q = q + 1
+                
+             End If
+        Next i
+
+r = r + 3
+t = 0
+v = 0
+s = 0
+q = 0
+
+Next yow
+
+Ws.Activate
+
+End Sub
+

@@ -1,0 +1,109 @@
+Sub StaraExpenses()
+Dim MyName As String
+Dim i As Integer
+Dim rge As Range
+Dim MyNumber As Integer
+Dim MyQuantity As Double
+Dim MyProduct As String
+Dim answer As String
+Dim MyTotalOrder As String
+
+MyName = InputBox("Who are you?: ")
+
+Range("A1").Activate
+i = 1
+
+    Do Until IsEmpty(ActiveCell.Offset(0, i))
+        i = i + 1
+    Loop
+
+ActiveCell.Offset(0, i).Value = MyName
+
+'ActiveCell.Offset(0, i).Interior.Color = 1
+
+
+Set rge = Range(ActiveCell.Offset(0, i), ActiveCell.Offset(23, i))
+rge.BorderAround xlContinuous
+rge.Borders(xlInsideHorizontal).LineStyle = xlContinuous
+rge.Borders(xlInsideVertical).LineStyle = xlContinuous
+
+MyNumber = InputBox("What did you order on Friday, input number 1 to 21: ")
+    
+    Do Until MyNumber >= 1 And MyNumber <= 22
+    
+        If MyNumber < 0 Or MyNumber > 22 Then
+            MsgBox ("are you fooling me I said between 1 and 21")
+            MyNumber = InputBox("What did you order on Friday, input number 1 to 21: ")
+        End If
+    
+    Loop
+    
+MyProduct = Range("B" & MyNumber + 1)
+
+MyQuantity = InputBox("What quantity of " & MyProduct & " did you order: ")
+
+MyTotalOrder = MyQuantity & " x " & MyProduct
+
+Range("A1").Activate
+ActiveCell.Offset(MyNumber, i).Value = MyQuantity
+
+answer = MsgBox("Did you order anything else ?", vbYesNo + vbQuestion)
+
+    Do While answer = vbYes
+            If answer = vbYes Then
+    
+                MyNumber = InputBox("Please input the number product from column A (1 to 21): ")
+        
+                    Do Until MyNumber >= 1 And MyNumber <= 22
+        
+                        If MyNumber < 0 Or MyNumber > 22 Then
+                            MsgBox ("are you fooling me I said between 1 and 21")
+                            MyNumber = InputBox("Please input the number product from column A (1 to 21): ")
+                        End If
+        
+                    Loop
+                
+                MyProduct = Range("B" & MyNumber + 1)
+    
+                MyQuantity = InputBox("What quantity of " & MyProduct & " did you order: ")
+    
+                Range("A1").Activate
+                ActiveCell.Offset(MyNumber, i).Value = MyQuantity
+                answer = MsgBox("Have you ordered anything else ?", vbYesNo + vbQuestion)
+    
+            MyTotalOrder = MyTotalOrder & " , " & MyQuantity & " x " & MyProduct
+    
+            End If
+    
+        Loop
+
+
+Range("A1").Activate
+
+Dim M As Integer
+Dim K As Integer
+Dim MySpent As Double
+Dim MyTotal As Double
+
+K = Range("A1", ActiveCell.End(xlToRight)).Columns.Count
+
+    For M = 1 To 22
+        Range("A1").Activate
+        MySpent = ActiveCell.Offset(M, 2) * ActiveCell.Offset(M, K - 1)
+
+        MyTotal = MyTotal + MySpent
+
+    Next
+
+MyTotal = MyTotal + Range("C23") / 20
+
+Range("A1").Activate
+ActiveCell.Offset(M, K - 1).Value = MyTotal
+
+
+MsgBox ("Maxime and myself thank you " & MyName & " for having joined us. You owe " & MyTotal & _
+" to Benjamin. It includes " & MyTotalOrder & " +  4.95 of service - Napiwek (99 pln / 20 participants)")
+
+MyTotal = 0
+
+End Sub

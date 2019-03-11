@@ -1,0 +1,130 @@
+Sub data_cleaning()
+
+Dim MyRange As Range
+Dim i As Integer
+Dim Myvalue As String
+Dim Txtfound As String
+Dim Numberfound As Long
+Dim ws As Excel.Worksheet
+Dim MyWs As Excel.Worksheet
+Dim Mydate As String
+
+Worksheets.Add
+Set Ms = ActiveSheet
+Mydate = Format(Now, "MM - YYYY")
+ActiveSheet.Name = "Sales activity " & Mydate
+Set MyWs = Worksheets("Raw data")
+
+Range("A1").Activate
+
+Cells(2, Cells(2, Columns.Count).End(xlToLeft).Column + 1) = "Sales Value"
+Cells(2, Cells(2, Columns.Count).End(xlToLeft).Column + 1) = "Bonus"
+Cells(2, Cells(2, Columns.Count).End(xlToLeft).Column + 1) = "Country"
+Cells(2, Cells(2, Columns.Count).End(xlToLeft).Column + 1) = "Number Country"
+
+Range("A2", Cells(2, Cells(2, Columns.Count).End(xlToLeft).Column)).Select
+
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = -0.249977111117893
+        .PatternTintAndShade = 0
+    End With
+    
+    With Selection.Font
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = 0
+        .Size = 10
+        .Name = "Calibri"
+    End With
+    
+Selection.Font.Bold = True
+
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+    End With
+    
+     With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+
+Set MyRange = MyWs.Range("A3", "A" & Cells(Rows.Count, 1).End(xlUp).Row)
+
+    For Each cell In MyRange
+        cell.Activate
+        Myvalue = cell
+            
+        For i = 1 To VBA.Len(Myvalue)
+            If IsNumeric(VBA.Mid(Myvalue, i, 1)) Then
+                Numberfound = Numberfound & VBA.Mid(Myvalue, i, 1)
+            ElseIf Not IsNumeric(VBA.Mid(MyvaTelue, i, 1)) Then
+                Txtfound = Txtfound & VBA.Mid(Myvalue, i, 1)
+            End If
+            
+        Next
+ActiveCell.Offset(0, 9).Value = Txtfound
+ActiveCell.Offset(0, 10).Value = Numberfound
+
+Txtfound = Range("Q1")
+Numberfound = Range("Q1")
+
+ActiveCell.Offset(0, 7).Value = ActiveCell.Offset(0, 5).Value * ActiveCell.Offset(0, 6).Value
+    If ActiveCell.Offset(0, 7).Value > 85000 Then
+        ActiveCell.Offset(0, 8).Value = ActiveCell.Offset(0, 7) * 0.05
+    ElseIf ActiveCell.Offset(0, 7).Value > 6000 Then
+        ActiveCell.Offset(0, 8).Value = ActiveCell.Offset(0, 7) * 0.035
+    ElseIf ActiveCell.Offset(0, 7).Value > 4500 Then
+        ActiveCell.Offset(0, 8).Value = ActiveCell.Offset(0, 7) * 0.027
+    Else
+        ActiveCell.Offset(0, 8).Value = "No bonus"
+    End If
+
+      Next
+      
+
+Range("H3", "I" & Cells(Rows.Count, 1).End(xlUp).Row).Select
+
+
+    With Selection
+    .NumberFormat = "0.00"
+    .Style = "Comma"
+    End With
+     
+Range("N2").Activate
+ActiveCell.Value = "Summary"
+ActiveCell.Offset(0, 1).Value = "Total quantity/ country"
+ActiveCell.Offset(0, 2).Value = "Total sales/country"
+ActiveCell.Offset(0, 3).Value = "Total bonus/country"
+
+Dim Countryrange As Range
+Dim Acountry As String
+
+Set Countryrange = Range("J3", "J" & Cells(Rows.Count, 1).End(xlUp).Row)
+Countryrange.Copy
+Range("N3").PasteSpecial
+
+Range("N3", "N" & Cells(Rows.Count, 1).End(xlUp).Row).RemoveDuplicates Columns:=1, Header:=xlNo
+
+Range("N2").Activate
+
+
+Do Until IsEmpty(ActiveCell.Offset(1, 0))
+
+        
+        ActiveCell.Offset(1, 0).Activate
+        Acountry = ActiveCell
+                'ActiveCell.Offset(0, 1).Value = Excel.Application.WorksheetFunction.SumIfs(Range("H3", "H20"), Range("J3", "J20"), AT)
+                ActiveCell.Offset(0, 1).Value = Excel.Application.WorksheetFunction.SumIfs(Range("I3", "I" & Cells(Rows.Count, 1).End(xlUp).Row), Countryrange, Acountry)
+                ActiveCell.Offset(0, 2).Value = Excel.Application.WorksheetFunction.SumIfs(Range("H3", "H" & Cells(Rows.Count, 1).End(xlUp).Row), Countryrange, Acountry)
+                ActiveCell.Offset(0, 3).Value = Excel.Application.WorksheetFunction.SumIfs(Range("I3", "I" & Cells(Rows.Count, 1).End(xlUp).Row), Countryrange, Acountry)
+        Loop
+        
+ActiveCell.Offset(1, 0) = "Total"
+ActiveCell.Offset(1, 1).Value = Excel.Application.WorksheetFunction.Sum(Range("O3", "O" & Cells(Rows.Count, 1).End(xlUp).Row))
+ActiveCell.Offset(1, 2).Value = Excel.Application.WorksheetFunction.Sum(Range("P3", "P" & Cells(Rows.Count, 1).End(xlUp).Row))
+ActiveCell.Offset(1, 3).Value = Excel.Application.WorksheetFunction.Sum(Range("Q3", "Q" & Cells(Rows.Count, 1).End(xlUp).Row))
+
+End Sub

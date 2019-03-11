@@ -1,0 +1,249 @@
+Sub ben()
+
+Dim AcWk As Workbook
+Dim MyWk As Workbook
+Dim i As Integer
+Dim rng As Range
+Dim acid As Double
+Dim acid1 As Double
+Dim r As Integer
+Dim p As Integer
+Dim o As Integer
+Dim lastrow As Long
+Dim Mydate As String
+
+Mydate = Format(DateSerial(Year(Date), Month(Date), 0), "mmm-yyyy")
+
+p = 0
+Set AcWk = Workbooks("macro")
+Set MyWk = Workbooks.Add
+
+AcWk.Worksheets(1).Cells.Copy
+MyWk.Sheets(1).PasteSpecial
+
+ActiveSheet.Range("A1").Select
+
+'Worksheets("BW").Activate
+Rows("1:10").Delete
+ActiveSheet.Cells.UnMerge
+Rows("3").AutoFilter field:=4, Criteria1:="result"
+Range("A1").Activate
+ActiveCell.Offset(2, 0).Select
+
+Set rng = Range(Cells(ActiveCell.Row + 1, 1), Cells(Rows.Count, 1))
+rng.SpecialCells(xlCellTypeVisible).Cells(1).Select
+
+Range(ActiveCell, ActiveCell.End(xlDown).End(xlToRight)).Select
+Application.DisplayAlerts = False
+Selection.Delete
+Application.DisplayAlerts = True
+
+Rows("3").AutoFilter
+Range("R:R,T:T,V:V,X:X").EntireColumn.Delete
+Range("E3").Select
+ActiveCell.EntireColumn.Insert
+ActiveCell.Offset(0, 0).Select
+
+i = 1
+
+    Do Until IsEmpty(ActiveCell.Offset(i, -1))
+
+        If ActiveCell.Offset(i, -1) <> "" Then
+
+            ActiveCell.Offset(i, 0).Value = Right(ActiveCell.Offset(i, -1), 6)
+            i = i + 1
+        End If
+    Loop
+    
+ActiveCell.Offset(0, 1).EntireColumn.Insert
+ActiveCell.Offset(0, 1).EntireColumn.Insert
+ActiveCell.Offset(0, 1).EntireColumn.Insert
+ActiveCell.Offset(0, 1).EntireColumn.Insert
+
+Rows("3").AutoFilter field:=19, Criteria1:="KARTODE301"
+
+Range("S3").Activate
+
+
+Range("E1").Activate
+Columns("E").Select
+
+Selection.SpecialCells(xlCellTypeVisible).Copy
+
+
+ActiveCell.Offset(0, 1).Activate
+Selection.PasteSpecial
+
+Rows("3").AutoFilter
+    With Columns("E:F")
+        .NumberFormat = "0"
+        .Value = .Value
+    End With
+
+Range("A3").Activate
+ActiveCell.Offset(1, 6).Activate
+
+
+    Do Until IsEmpty(ActiveCell.Offset(p, -2))
+    
+    acid = ActiveCell.Offset(p, -2).Value
+    r = 0
+            Do Until IsEmpty(ActiveCell.Offset(r, -1))
+        
+        
+                If ActiveCell.Offset(r, -1).Value = acid Then
+                acid1 = ActiveCell.Offset(r, -1).Value
+                ActiveCell.Offset(p, 0).Value = acid1
+        
+                r = r + 10000
+        
+                Else
+        
+                r = r + 1
+        
+                End If
+            Loop
+
+        p = p + 1
+    
+    Loop
+
+Range("A:A,B:B").EntireColumn.Delete
+
+Rows("3").AutoFilter field:=5, Criteria1:="="
+Range("A3").Activate
+
+ActiveCell.EntireRow.Hidden = True
+Application.DisplayAlerts = False
+ActiveCell.CurrentRegion.Delete
+
+
+Application.DisplayAlerts = True
+Rows("3").AutoFilter
+
+Range("D:D").EntireColumn.Delete
+
+Range("A3").Activate
+ActiveCell.EntireRow.Hidden = False
+
+Range("E:E", "F:F").EntireColumn.Delete
+
+Range("A1").Activate
+ActiveCell.End(xlDown).Select
+ActiveCell.Offset(1, 0).Activate
+
+
+Range("G6").CurrentRegion.Select
+
+Selection.Interior.Color = xlNone
+
+Dim lastcolumn As Long
+lastcolumn = Cells(3, Columns.Count).End(xlToLeft).Column
+
+Range(Cells(3, 1), Cells(3, lastcolumn)).Select
+
+With Selection
+    .AutoFilter
+    .Interior.ColorIndex = 37
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlCenter 
+End With
+
+Cells(3, lastcolumn).Activate
+ActiveCell.Offset(0, -1).EntireColumn.Insert
+ActiveCell.Offset(0, 1).EntireColumn.Insert
+ActiveCell.Offset(0, 3).EntireColumn.Insert
+ActiveCell.Offset(-2, -1).Value = "VAT"
+ActiveCell.Offset(-2, 1).Value = "Transportation FX EUR40"
+ActiveCell.Offset(-2, 3).Value = "DIFFERENCE"
+
+i = 1
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+For i = 1 To lastrow
+
+    	If ActiveCell.Offset(i, -5).Value = "KARTONIMEX" Then
+       		 ActiveCell.Offset(i, -1).Value = ActiveCell.Offset(i, -2) * 0.2
+        
+    	ElseIf IsEmpty(ActiveCell.Offset(i, -5)) Then Exit For
+        
+    	End If
+    
+    ActiveCell.Offset(i, 0).Value = ActiveCell.Offset(i, -2).Value + ActiveCell.Offset(i, -1).Value
+    ActiveCell.Offset(i, 1).Value = ActiveCell.Offset(i, -3).Value * 40
+    ActiveCell.Offset(i, 3).Value = ActiveCell.Offset(i, 1).Value - ActiveCell.Offset(i, 2).Value
+    
+Next i
+
+
+Rows(lastrow + 1).Clear
+Rows(lastrow + 2).Clear
+Rows(lastrow + 3).Clear
+
+
+Dim RangeSum1 As Range
+Dim rangeSum2 As Range
+Dim rangeSum3 As Range
+Dim rangeSum4 As Range
+Dim rangeSum5 As Range
+
+Set RangeSum1 = Range("Q4", "Q" & Cells(Rows.Count, 1).End(xlUp).Row + 1)
+Set rangeSum2 = Range("S4", "S" & Cells(Rows.Count, 1).End(xlUp).Row + 1)
+Set rangeSum3 = Range("U4", "U" & Cells(Rows.Count, 1).End(xlUp).Row + 1)
+Set rangeSum4 = Range("V4", "V" & Cells(Rows.Count, 1).End(xlUp).Row + 1)
+Set rangeSum5 = Range("W4", "W" & Cells(Rows.Count, 1).End(xlUp).Row + 1)
+
+Range("Q" & Cells(Rows.Count, 1).End(xlUp).Row + 1).Activate
+
+ActiveCell.Value = Excel.Application.WorksheetFunction.Sum(RangeSum1)
+ActiveCell.Offset(0, 2).Value = Excel.Application.WorksheetFunction.Sum(rangeSum2)
+ActiveCell.Offset(0, 4).Value = Excel.Application.WorksheetFunction.Sum(rangeSum3)
+ActiveCell.Offset(0, 5).Value = Excel.Application.WorksheetFunction.Sum(rangeSum4)
+ActiveCell.Offset(0, 6).Value = Excel.Application.WorksheetFunction.Sum(rangeSum5)
+
+ActiveCell.Offset(0, -1).Value = "Total"
+
+
+
+Range(ActiveCell, "W" & lastrow + 1).Select
+
+    With Selection
+        .Style = "Comma"
+        .NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)"
+    End With
+
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent1
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+
+    
+ActiveWindow.Zoom = 88
+
+Cells.EntireColumn.AutoFit
+
+Rows("4:4").Select
+ActiveWindow.FreezePanes = True
+ActiveWindow.DisplayGridlines = False
+
+ActiveSheet.Name = "BW Data"
+
+ActiveWorkbook.SaveAs Filename:="C:\Users\BMERCIE\Desktop\Macro Diana\Final_Output & " - " & Mydate &.xlsx"
+
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+

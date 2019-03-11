@@ -1,0 +1,255 @@
+Option Explicit
+
+Private Sub worksheet_followHyperlink(ByVal Target As Hyperlink)
+    
+    If Target.Range.Address = "$A$6" Then
+        Call openfolder
+     End If
+     If Target.Range.Address = "$A$7" Then
+        Call openfolder
+     End If
+   
+    If Target.Range.Address = "$A$8" Then
+        Call openfolder
+     End If
+   
+    If Target.Range.Address = "$A$9" Then
+        Call openfolder
+     End If
+   
+    If Target.Range.Address = "$A$10" Then
+        Call openfolder
+     End If
+          
+    If Target.Range.Address = "$A$11" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$12" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$13" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$14" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$15" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$16" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$17" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$18" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$19" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$20" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$21" Then
+        Call openfolder
+     End If
+         If Target.Range.Address = "$A$22" Then
+        Call openfolder
+     End If
+     
+ If Target.Range.Address = "$A$23" Then
+        Call openfolder
+     End If
+        
+        
+         If Target.Range.Address = "$A$25" Then
+        Call openfolder
+     End If
+     If Target.Range.Address = "$A$26" Then
+        Call openfolder
+     End If
+   
+    If Target.Range.Address = "$A$27" Then
+        Call openfolder
+     End If
+   
+    If Target.Range.Address = "$A$28" Then
+        Call openfolder
+     End If
+   
+    If Target.Range.Address = "$A$29" Then
+        Call openfolder
+     End If
+          
+    If Target.Range.Address = "$A$30" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$31" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$32" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$33" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$34" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$35" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$36" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$37" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$38" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$39" Then
+        Call openfolder
+     End If
+     
+   If Target.Range.Address = "$A$40" Then
+        Call openfolder
+     End If
+   
+           
+    If Target.Range.Address = "$A$41" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$42" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$43" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$44" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$45" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$46" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$47" Then
+        Call openfolder
+     End If
+        
+        
+          If Target.Range.Address = "$A$48" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$49" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$50" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$51" Then
+        Call openfolder
+     End If
+     
+         If Target.Range.Address = "$A$52" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$53" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$54" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$55" Then
+        Call openfolder
+     End If
+     
+     If Target.Range.Address = "$A$57" Then
+        Call openfolder
+     End If
+       If Target.Range.Address = "$A$58" Then
+        Call openfolder
+     End If
+       
+    If Target.Range.Address = "$A$59" Then
+        Call openfolder
+     End If
+     
+       If Target.Range.Address = "$A$60" Then
+        Call openfolder
+     End If
+       
+     
+End Sub
+
+Sub openfolder()
+
+Dim mydate As String
+Dim myfolder As String
+Dim path1 As String
+Dim path2 As String
+Dim path3 As String
+Dim path4 As String
+
+Worksheets("BSC List").Activate
+ActiveCell.Activate
+
+mydate = Range("B1").Value
+myfolder = ActiveCell.Value
+path1 = "S:\Finance Project 2\SSC\2019\01_IP_BSC_BE08\01_MONTH_ENDS\" & mydate & "\01_ACCRUALS\" & myfolder
+
+path2 = "S:\Finance Project 2\SSC\2019\01_IP_BSC_BE08\01_MONTH_ENDS\" & mydate & "\02_RECLASSES\" & myfolder
+
+path3 = "S:\Finance Project 2\SSC\2019\01_IP_BSC_BE08\01_MONTH_ENDS\" & mydate & "\04_INTERCOMPANY\" & myfolder
+
+path4 = "S:\Finance Project 2\SSC\2019\01_IP_BSC_BE08\01_MONTH_ENDS\" & mydate & "\06_OTHER\" & myfolder
+
+
+    If Not Application.Intersect(ActiveCell, Range("A6:A23")) Is Nothing Then
+    Call Shell("explorer.exe " & path1, vbNormalFocus)
+    End If
+
+        If Not Application.Intersect(ActiveCell, Range("A25:A36")) Is Nothing Then
+         Call Shell("explorer.exe " & path2, vbNormalFocus)
+            End If
+            
+            If Not Application.Intersect(ActiveCell, Range("A38:A52")) Is Nothing Then
+             Call Shell("explorer.exe " & path3, vbNormalFocus)
+            End If
+            
+            If Not Application.Intersect(ActiveCell, Range("A54:A57")) Is Nothing Then
+                Call Shell("explorer.exe " & path4, vbNormalFocus)
+                 End If
+                      
+    
+End Sub
+
+

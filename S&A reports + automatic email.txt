@@ -1,0 +1,103 @@
+
+Dim WsList As Worksheet
+
+Sub report_auto()
+
+Dim MyCC As String
+Dim Mymanager As String
+Dim ws As Worksheet
+Dim wbnew As Workbook
+Dim Mytab As String
+Dim Mydate As String
+Dim LastRow As Long
+Dim MyMan As String
+Dim filename As String
+
+Mydate = Format(DateSerial(Year(Date), Month(Date), 0), "mmm-yyyy")
+
+Set WsList = Worksheets("List")
+LastRow = Cells(Rows.Count, 8).End(xlUp).Row
+
+    For P = 9 To LastRow
+        WsList.Activate
+        MyCC = WsList.Range("H" & P)
+        Mymanager = WsList.Range("G" & P)
+        filename = VBA.FileSystem.Dir("C:\Users\BMERCIE\Desktop\S&A reports Macro\" & Mymanager & " " & Mydate & " S&A.xlsx")
+        
+            
+        For Each ws In ActiveWorkbook.Worksheets
+            If Not IsEmpty(MyCC) Then
+                    Mytab = ws.Name
+                If Mytab = MyCC Then
+                    ws.Activate
+                    Cells.Copy
+                    
+                        If filename = VBA.Constants.vbNullString Then
+                        
+                            Set wbnew = Workbooks.Add
+                            Range("A1").PasteSpecial xlPasteValuesAndNumberFormats
+                            Range("A1").PasteSpecial xlPasteFormats
+                            ActiveSheet.Name = MyCC
+                            ActiveWorkbook.SaveAs "C:\Users\BMERCIE\Desktop\S&A reports Macro\" & Mymanager & " " & Mydate & " S&A.xlsx"
+                            filename = VBA.FileSystem.Dir("C:\Users\BMERCIE\Desktop\S&A reports Macro\" & Mymanager & " " & Mydate & " S&A.xlsx")
+                    
+                        Else
+                            
+                            Workbooks.Open "C:\Users\BMERCIE\Desktop\S&A reports Macro\" & Mymanager & " " & Mydate & " S&A.xlsx"
+                            Sheets.Add(After:=Sheets(Sheets.Count)).Name = MyCC
+                            Range("A1").PasteSpecial xlPasteValuesAndNumberFormats
+                            Range("A1").PasteSpecial xlPasteFormats
+
+                        End If
+                        
+                    Application.DisplayAlerts = False
+                    ActiveWorkbook.Save
+                    ActiveWorkbook.Close
+                    Application.DisplayAlerts = True
+                    MyCC = ""
+                    MyMan = Mymanager
+                    
+                    Exit For
+                            
+                 End If
+                        
+            End If
+            
+        Next
+
+    Next P
+
+End Sub
+
+
+Sub email()
+Dim EmailRange As Range
+Dim OLApp As Outlook.Application
+Dim OLMail As Object
+Dim strFolderpath As String
+Dim myfilename As String
+
+Worksheets("list").Activate
+
+'Set EmailRange = WsList.Range("A9", "A" & Cells(Rows.Count, 12).End(xlUp).Row)
+
+Set OLApp = New Outlook.Application
+Set OLMail = OLApp.createItem(0)
+OLApp.session.logon
+myfilename = Range("P9").Value
+strFolderpath = "C:\Users\BMERCIE\Desktop\S&A reports Macro\"
+
+
+With OLMail
+    .To = Range("L9").Value
+    .cc = Range("M9").Value
+    .Subject = Range("N9").Value
+    .Body = Range("O9").Value
+    '.Attachments.Add ("C:\Users\BMERCIE\Desktop\S&A reports Macro\O Taudien Jan-2019 S&A.xlsx")
+    .Attachments.Add strFolderpath & myfilename
+    .Display
+    '.send
+End With
+
+
+End Sub

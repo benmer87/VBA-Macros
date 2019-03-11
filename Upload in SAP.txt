@@ -1,0 +1,148 @@
+Public MyUpload As Worksheet
+Public NewWrk As Workbook
+Public NewSheet As Worksheet
+Public MyName As String
+Public MyPlant As String
+Public MyMonth As String
+Public MyMonth_Long As String
+Public MyYear As String
+Public MyDay As String
+Public MySheet As String
+Public MyDate As String
+Public questionnaire As Byte
+Public questionnaire_date As Byte
+Const MyPath = "C:\Upload_SAP"
+
+
+Sub SapUpload()
+
+MySheet = ActiveSheet.Name
+
+If MySheet = "UPLOAD" Or MySheet = "Upload" Or MySheet = "upload" Then
+Call checkVersion
+Else
+questionnaire = MsgBox("Do you really want to post JV from current sheet?", vbYesNo)
+    If questionnaire = 6 Then
+    Call checkVersion
+    Else
+MsgBox ("OK. See you next time.")
+End If
+End If
+
+MsgBox "Done :)"
+
+Application.DisplayAlerts = False
+Workbooks("Upload.xlsm").Close
+Application.DisplayAlerts = True
+
+End Sub
+
+Sub checkVersion()
+
+Set MyUpload = Worksheets(MySheet)
+
+    If MyUpload.Range("B2") = "" And MyUpload.Range("B5") = "ZN" Or MyUpload.Range("B2") = "" And MyUpload.Range("B5") = "SA" Then
+    MyName = Replace(MyUpload.Range("G5"), "/", "_")
+    MyMonth = Format(MyUpload.Range("A5"), "mm")
+    MyMonth_Long = Format(MyUpload.Range("A5"), "mmmm")
+    MyYear = Year(MyUpload.Range("A5"))
+    MyPlant = MyUpload.Range("N5")
+    MyDay = Format(MyUpload.Range("A5"), "dd")
+    MyDate = MyMonth & MyDay & MyYear
+    End If
+    
+    If MyUpload.Range("B2") = "ZN" Or MyUpload.Range("B2") = "SA" Then
+    MyName = Replace(MyUpload.Range("G2"), "/", "_")
+    MyMonth = Format(MyUpload.Range("A2"), "mm")
+    MyMonth_Long = Format(MyUpload.Range("A2"), "mmmm")
+    MyYear = Year(MyUpload.Range("A2"))
+    MyPlant = MyUpload.Range("N2")
+    MyDay = Format(MyUpload.Range("A2"), "dd")
+    MyDate = MyMonth & MyDay & MyYear
+    End If
+    
+    If MyUpload.Range("B1") = "ZN" Or MyUpload.Range("B1") = "SA" Then
+    MyName = Replace(MyUpload.Range("G1"), "/", "_")
+    MyMonth = Format(MyUpload.Range("A1"), "mm")
+    MyMonth_Long = Format(MyUpload.Range("A1"), "mmmm")
+    MyYear = Year(MyUpload.Range("A1"))
+    MyPlant = MyUpload.Range("N1")
+    MyDay = Format(MyUpload.Range("A1"), "dd")
+    MyDate = MyMonth & MyDay & MyYear
+    End If
+
+If MyPlant = "99" Then MyPlant = "Mortagne"
+If MyPlant = "143" Then MyPlant = "Creil"
+If MyPlant = "132" Then MyPlant = "Arles"
+If MyPlant = "994" Then MyPlant = "Espaly"
+If MyPlant = "979" Then MyPlant = "Guadaloupe"
+If MyPlant = "7542" Then MyPlant = "Martinique"
+
+    If MyDay > 0 And MyDay < 5 Then
+        questionnaire_date = MsgBox("Are you sure you want to post JV with " & MyMonth_Long & " date?", vbYesNo)
+            If questionnaire_date = 7 Then
+            MsgBox ("OK. Please correct your template and try once again :)")
+            Exit Sub
+            Else
+            End If
+    End If
+
+Application.DisplayAlerts = False
+
+MyUpload.Range("A1:BA1000").Copy
+
+Set NewWrk = Workbooks.Add
+With NewWrk
+    Set NewSheet = NewWrk.Sheets("Sheet1")
+    NewSheet.Paste
+    .SaveAs Filename:=MyPath & "\" & MyPlant & "_" & MyName & "_" & MyMonth & "." & MyYear & ".csv", FileFormat:=xlCSV _
+        , CreateBackup:=False
+    .Close
+End With
+
+Workbooks.Open Filename:=MyPath & "\" & MyPlant & "_" & MyName & "_" & MyMonth & "." & MyYear & ".csv"
+
+If ActiveSheet.Range("A4") = "Document date" Then
+    Rows("1:3").EntireRow.Delete
+End If
+
+For i = 2 To 35
+If ActiveSheet.Cells(i, 25).Value = 0 Then
+ActiveSheet.Cells(i, 25).Value = ""
+End If
+If ActiveSheet.Cells(i, 28).Value = 0 Then
+ActiveSheet.Cells(i, 28).Value = ""
+End If
+Next
+
+ActiveWorkbook.Close SaveChanges:=True
+
+Application.DisplayAlerts = True
+     
+If Not IsObject(aaaa) Then
+   Set SapGuiAuto = GetObject("SAPGUI")
+   Set aaaa = SapGuiAuto.GetScriptingEngine
+End If
+If Not IsObject(Connection) Then
+   Set Connection = aaaa.Children(0)
+End If
+If Not IsObject(session) Then
+   Set session = Connection.Children(0)
+End If
+If IsObject(WScript) Then
+   WScript.ConnectObject session, "on"
+   WScript.ConnectObject aaaa, "on"
+End If
+
+session.findById("wnd[0]").maximize
+session.findById("wnd[0]/tbar[0]/okcd").Text = "/nZGI108"
+session.findById("wnd[0]").sendVKey 0
+session.findById("wnd[0]/usr/radR_CSV").Select
+session.findById("wnd[0]/usr/radR_MMDDYY").Select
+session.findById("wnd[0]/usr/ctxtINPUT").Text = MyPath & "\" & MyPlant & "_" & MyName & "_" & MyMonth & "." & MyYear & ".csv"
+session.findById("wnd[0]/tbar[1]/btn[8]").press
+'ActiveWorkbook.Close SaveChanges:=False
+
+End Sub
+
+

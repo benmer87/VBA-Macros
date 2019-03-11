@@ -1,0 +1,175 @@
+Public MyRange As Range
+Public Cell As Excel.Range
+Public r As Integer
+Public wbk As Excel.Workbook
+Public Swk As Excel.Worksheet
+Public MyName As String
+Public MyCompanycode As String
+Public MyYear As Integer
+Public MyPath As String
+Public CellWb As Excel.Workbook
+
+Sub recon()
+
+Set wbk = ThisWorkbook
+Set wsk = ActiveSheet
+
+Set MyRange = Excel.Application.InputBox("Please select the range of cells to create hyperlinks per document" & _
+vbNewLine, "Hyperlink Creation", , , , , , 8)
+
+With MyRange
+    .TextToColumns , xlDelimited
+    .ClearFormats
+End With
+
+r = Excel.Application.WorksheetFunction.Count(MyRange)
+
+For Each Cell In MyRange
+
+      With wbk
+        If Cell > 699999 Or Cell = "" Then
+        
+        GoTo Tiloli
+                
+        Else
+        .Sheets.Add after:=.Sheets(.Sheets.Count)
+                
+        On Error GoTo ErrorHandler
+        ActiveSheet.Name = Cell.Value
+        MyName = ActiveSheet.Name
+        
+         wsk.Hyperlinks.Add Anchor:=Cell, Address:="", SubAddress:= _
+        MyName & "!A1"
+               
+
+            MyCompanycode = "FR07"
+            MyYear = 2018
+            MyPath = "C:\Users\BMERCIE\Desktop\GFS procedures\GL reconciliation\Recon September 2018\Back up"
+
+        If Not IsObject(SapApplication) Then
+        Set SapGuiAuto = GetObject("SAPGUI")
+        Set SapApplication = SapGuiAuto.GetScriptingEngine
+        End If
+        If Not IsObject(Connection) Then
+        Set Connection = SapApplication.Children(0)
+        End If
+        If Not IsObject(session) Then
+        Set session = Connection.Children(0)
+        End If
+        If IsObject(WScript) Then
+        WScript.ConnectObject session, "on"
+        WScript.ConnectObject SapApplication, "on"
+        End If
+        session.findById("wnd[0]").maximize
+        session.findById("wnd[0]/tbar[0]/okcd").Text = "/nfb03"
+        session.findById("wnd[0]").sendVKey 0
+        session.findById("wnd[0]/usr/txtRF05L-BELNR").Text = Cell
+        session.findById("wnd[0]/usr/ctxtRF05L-BUKRS").Text = MyCompanycode
+        session.findById("wnd[0]/usr/txtRF05L-GJAHR").Text = MyYear
+        session.findById("wnd[0]/usr/txtRF05L-XBLNR").Text = ""
+        session.findById("wnd[0]/usr/txtRF05L-XBLNR").SetFocus
+        session.findById("wnd[0]/usr/txtRF05L-XBLNR").caretPosition = 0
+        session.findById("wnd[0]").sendVKey 0
+        session.findById("wnd[0]/mbar/menu[0]/menu[5]").Select
+        session.findById("wnd[0]/mbar/menu[0]/menu[1]/menu[2]").Select
+        session.findById("wnd[1]/tbar[0]/btn[0]").press
+        session.findById("wnd[1]/usr/ctxtDY_PATH").Text = MyPath
+        session.findById("wnd[1]/usr/ctxtDY_FILENAME").Text = Cell & ".txt"
+        session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 7
+        session.findById("wnd[1]/tbar[0]/btn[0]").press
+
+         End If
+                 If Err.Number = 1004 Then
+                    Debug.Print Cell.Value & " doc number already used as a sheet name"
+                End If
+      End With
+
+   
+Call Sapadding
+
+Late:
+Tiloli:
+
+Next Cell
+
+
+Exit Sub
+ErrorHandler:
+    Application.DisplayAlerts = False
+    ActiveSheet.Delete
+    Application.DisplayAlerts = True
+    Resume Late
+        
+End Sub
+
+
+Sub Sapadding()
+
+On Error Resume Next
+Worksheets(MyName).Activate
+
+ With ActiveSheet.QueryTables.Add(Connection:= _
+        "TEXT;C:\Users\BMERCIE\Desktop\GFS procedures\GL reconciliation\Recon September 2018\Back up\" & MyName & ".txt" _
+        , Destination:=Range("$B$3"))
+        .CommandType = 0
+        .Name = MyName
+        .FieldNames = True
+        .RowNumbers = False
+        .FillAdjacentFormulas = False
+        .PreserveFormatting = True
+        .RefreshOnFileOpen = False
+        .RefreshStyle = xlInsertDeleteCells
+        .SavePassword = False
+        .SaveData = True
+        .AdjustColumnWidth = True
+        .RefreshPeriod = 0
+        .TextFilePromptOnRefresh = False
+        .TextFilePlatform = 437
+        .TextFileStartRow = 12
+        .TextFileParseType = xlDelimited
+        .TextFileTextQualifier = xlTextQualifierDoubleQuote
+        .TextFileConsecutiveDelimiter = False
+        .TextFileTabDelimiter = False
+        .TextFileSemicolonDelimiter = False
+        .TextFileCommaDelimiter = False
+        .TextFileSpaceDelimiter = False
+        .TextFileOtherDelimiter = "|"
+        .TextFileColumnDataTypes = Array(9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        .TextFileTrailingMinusNumbers = True
+        .Refresh BackgroundQuery:=False
+    End With
+    
+
+
+Range("B3", Cells(3, Cells(3, Columns.Count).End(xlToLeft).Column)).Activate
+ActiveCell.Offset(1, 0).EntireRow.Delete
+
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent1
+        .TintAndShade = 0.399975585192419
+        .PatternTintAndShade = 0
+    End With
+    
+Range("H5").Activate
+ActiveCell.CurrentRegion.Select
+
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+
+
+ActiveWindow.Zoom = 90
+    Cells.Select
+    Cells.EntireColumn.AutoFit
+    ActiveWindow.DisplayGridlines = False
+    
+End Sub
+
+
+
+
